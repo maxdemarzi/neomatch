@@ -41,10 +41,9 @@ class NeoMatch < Sinatra::Application
   set :app_file, __FILE__
 
   get '/' do
-    content_type :json
     neo = Neography::Rest.new    
     names = %w[Emma Olivia Sophia Ava Isabella Mia Ella Emily Chloe Lily Madison Abigail Amelia Charlotte Avery Harper Addison Hannah Grace Sofia Sophie Zoey Zoe Aubrey Natalie Elizabeth Brooklyn Lucy Audrey Claire Evelyn My Anna Layla Lillian Samantha Ellie Maya Stella Leah Liam Ethan Mason Noah Jacob Jack Aiden Jackson Logan Lucas Benjamin William Ryan James Jayden Alexander Michael Owen Elijah Matthew Joshua Luke Dylan Carter Daniel Gabriel Caleb Nathan Henry Oliver Andrew Gavin Evan Landon Max Samuel Eli Connor Tyler Isaac]
-    user = names.sample
+    @user = names.sample
     
     cypher = "START me=node:users_index(name={user})
               MATCH skills<-[:has]-me-[:lives_in]->city<-[:in_location]-job-[:requires]->requirements
@@ -57,8 +56,14 @@ class NeoMatch < Sinatra::Application
               ORDER BY matching_skills / job_requires DESC, job_requires
               LIMIT 10"
 
-    jobs = neo.execute_query(cypher, {:user => user})["data"]   
-    JSON.pretty_generate({:user => user, :jobs => jobs})
+    @jobs = neo.execute_query(cypher, {:user => @user})["data"]   
+    haml :index
+  end
+  
+  get'/user/:user/skill/:skill' do
+    @user = params[:user]
+    @skill = params[:skill]
+    haml :skill
   end
   
 end

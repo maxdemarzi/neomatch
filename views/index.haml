@@ -1,0 +1,31 @@
+.container
+  .content
+    .row
+      %h2="Matching Jobs for #{@user}"
+      %i 
+        Reload the page or click 
+        %a{:href=>"/"}
+          Match Another User
+	
+      %table{:class => "table table-striped"}
+        %tr
+          %th Job
+          %th Match
+          %th Missing
+
+        - @jobs.each_with_index do |job, index|
+          %tr
+            %td
+              = job[1]
+              in 
+              %i= job[0]
+            %td
+              - if job[2].size == 0
+                100% Match
+              - else
+                Partial Match
+            %td
+              - job[2].each do |skill|
+                %a.btn.btn-success{:href => "/user/#{@user}/skill/#{skill}"}
+                  %i.icon-plus.icon-white
+                  =skill
